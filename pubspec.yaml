@@ -13,9 +13,9 @@ dependencies:
     sdk: flutter
 
   # 🗣️ Voice recognition
-  speech_to_text: ^7.1.0
+  speech_to_text: ^6.3.0
   url_launcher: ^6.2.5
-
+  avatar_glow: ^2.0.2
   # 👇 Use local plugin path (REMOVE version line!)
   device_apps:
     path: plugins/device_apps

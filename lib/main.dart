@@ -60,22 +60,29 @@ class _PixiHomePageState extends State<PixiHomePage> {
   }
 
   void _listen() async {
-    if (!_isListening) {
-      bool available = await _speech.initialize();
-      if (available) {
-        setState(() => _isListening = true);
-        _speech.listen(
-          onResult: (val) {
-            setState(() {
-              _text = val.recognizedWords;
-            });
-            _processCommand(val.recognizedWords);
-          },
-        );
-      }
-    } else {
-      setState(() => _isListening = false);
-      _speech.stop();
+    bool available = await _speech.initialize(
+      onStatus: (val) {
+        print('onStatus: $val');
+        if (val == 'done') {
+          setState(() => _isListening = false);
+          _processCommand(_text);
+        }
+      },
+      onError: (val) => print('onError: $val'),
+    );
+
+    if (available) {
+      setState(() => _isListening = true);
+      _speech.listen(
+        onResult: (val) {
+          setState(() {
+            _text = val.recognizedWords;
+          });
+        },
+        listenFor: const Duration(seconds: 5),
+        pauseFor: const Duration(seconds: 2),
+        //partialResults: false,
+      );
     }
   }
 
