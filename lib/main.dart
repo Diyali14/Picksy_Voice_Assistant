@@ -59,15 +59,30 @@ class _PixiHomePageState extends State<PixiHomePage> {
     flutterTts = FlutterTts();
   }
 
-  void _listen() async {
+  Future<void> _handleCommand() async {
+    _processCommand(_text);
+
+    if (!_text.toLowerCase().contains("stop")) {
+      await Future.delayed(const Duration(seconds: 1));
+      _listen();
+    }
+  }
+
+  Future<void> _listen() async {
     bool available = await _speech.initialize(
-      onStatus: (val) {
+      onStatus: (val) async {
         print('onStatus: $val');
         if (val == 'done') {
           setState(() => _isListening = false);
-          _processCommand(_text);
+          _handleCommand();
+
+          if (!_text.toLowerCase().contains("stop")) {
+            await Future.delayed(const Duration(seconds: 1));
+            _listen(); // Restart mic for next command
+          }
         }
       },
+
       onError: (val) => print('onError: $val'),
     );
 
@@ -79,7 +94,7 @@ class _PixiHomePageState extends State<PixiHomePage> {
             _text = val.recognizedWords;
           });
         },
-        listenFor: const Duration(seconds: 5),
+        listenFor: const Duration(seconds: 15),
         pauseFor: const Duration(seconds: 2),
         //partialResults: false,
       );
@@ -125,9 +140,9 @@ class _PixiHomePageState extends State<PixiHomePage> {
       final query = command.replaceFirst("search", "").trim();
       if (query.isNotEmpty) {
         final Uri searchUrl = Uri.parse(
-          "https://www.flipkart.com/search?q=$query",
+          "https://www.walmart.com/search?q=$query",
         );
-        _speak("Searching $query on Flipkart");
+        _speak("Searching $query on Walmart");
         if (await canLaunchUrl(searchUrl)) {
           await launchUrl(searchUrl, mode: LaunchMode.externalApplication);
         } else {
