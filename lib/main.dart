@@ -96,27 +96,25 @@ class _PixiHomePageState extends State<PixiHomePage> {
   void _processCommand(String command) async {
     command = command.toLowerCase();
 
-    if (command.contains("open flipkart")) {
+    if (command.contains("open walmart")) {
       if (_hasLaunchedFlipkart) {
-        _speak("Flipkart is already open.");
+        _speak("Opening Walmart for you.");
         return;
       }
 
       _hasLaunchedFlipkart = true;
 
-      bool isInstalled = await DeviceApps.isAppInstalled(
-        "com.flipkart.android",
-      );
+      bool isInstalled = await DeviceApps.isAppInstalled("com.walmart.android");
       if (isInstalled) {
-        DeviceApps.openApp("com.flipkart.android");
-        _speak("Opening Flipkart for you");
+        DeviceApps.openApp("com.walmart.android");
+        _speak("Opening Walmart for you");
       } else {
-        _speak("Flipkart is not installed. Opening in browser.");
-        final Uri flipkartUrl = Uri.parse("https://www.flipkart.com");
-        if (await canLaunchUrl(flipkartUrl)) {
-          await launchUrl(flipkartUrl, mode: LaunchMode.externalApplication);
+        _speak("Walmart is not installed. Opening in browser.");
+        final Uri walmartUrl = Uri.parse("https://www.walmart.com");
+        if (await canLaunchUrl(walmartUrl)) {
+          await launchUrl(walmartUrl, mode: LaunchMode.externalApplication);
         } else {
-          _speak("Can't open Flipkart in browser either.");
+          _speak("Can't open Walmart right now.");
         }
       }
     } else if (command.contains("stop") || command.contains("thank you")) {
